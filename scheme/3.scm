@@ -5,7 +5,7 @@
 ;;
 ;; Answer : 6857
 
-;;v1
+;; v1
 (begin
 
 	; these blocked off functions were to implement a prime sieve, but I took a simpler
