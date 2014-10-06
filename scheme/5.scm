@@ -10,21 +10,6 @@
 ;; v1
 ;; -- this is a brute force solution
 (begin
-
-	; finds the element in a list that op returns true for against all other
-	;	elements, could be used to find least or greatest 
-	;	(doesn't really have the best name)
-	(define against (lambda (op l) 
-		(cond
-			; if we're at the last pair (x . '()), return x
-			((null? (cdr l)) (car l))
-			; otherwise, return the greater of the first and the lowest of the tail
-			(else (let (
-				(tailAgainst (against op (cdr l))))
-				(cond
-					((op tailAgainst (car l)) tailAgainst)
-					(else (car l))))))))
-
 	; returns true if n is evenly divisibile by every number from 1, up to and
 	;	including to
 	(define testDivisibilityUpTo (lambda (n to)
