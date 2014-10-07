@@ -34,4 +34,3 @@
 			(squareSum (expt (apply + (range 1 (+ n 1) 1)) 2)))
 			(- squareSum sumSquares))))
 )
-
