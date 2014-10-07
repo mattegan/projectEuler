@@ -124,7 +124,7 @@
 			(greatestCounts (map greatest counts)))
 			(apply * (map (lambda (n) (expt (list-ref neededPrimes n) (list-ref greatestCounts n))) (range 0 (length neededPrimes) 1))))))
 
-	(display (findFirstDivisibleUpTo 8000))(newline)
+	(display (findFirstDivisibleUpTo 20))(newline)
 )
 
 ; v1
