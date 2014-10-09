@@ -163,7 +163,7 @@
 				(else (car l))))))))
 
 ; ---------------------------------------------------------------------------------------
-; Strings
+; Strings/Chars
 ; ---------------------------------------------------------------------------------------
 
 ; returns true if a string is a palindrome, such as -> "racecar"
@@ -178,6 +178,10 @@
 			(substring n 0 (/ (- (string-length n) 1) 2))
 			(substring n (/ (+ (string-length n) 1) 2) (string-length n))))))))
 
+(define char->digit (lambda (c)
+	(cond
+		((not (char-numeric? c)) (error "expected numeric character"))
+		(else (- (char->integer c) 48)))))
 
 ; ---------------------------------------------------------------------------------------
 ; Histograms
