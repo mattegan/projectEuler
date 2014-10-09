@@ -34,16 +34,49 @@
 			(else (try n (+ 1 div))))))
 	(try n 2)))
 
-; uses the sieve of eratosthnes to find primes up to n ()
+; generates primes up to n
 (define sieve-of-eratosthenes (lambda (n)
-		(define bounds (sqrt n))
-		(define narrow (lambda (rem pass)
-			(let (
-				(p (list-ref rem pass)))
-				(cond
-					((> p bounds) rem)
-					(else (narrow (subtraction rem (range (* 2 p) n p)) (+ 1 pass)))))))
-		(narrow (range 2 n 1) 0)))
+	; in a list of dotted pairs, finds the n-th true pair 
+	;	if the pair is defined as (n . #t), 0 indexed
+	; returns false if there are not at least n true values
+	;	contained in l
+	(define find-true (lambda (l n)
+		(cond
+			((null? l) #f)
+			((and (= n 0) (cdar l)) (caar l))
+			((= n 0) (find-true (cdr l) n))
+			((cdar l) (find-true (cdr l) (sub1 n)))
+			(else (find-true (cdr l) n)))))
+
+	; returns a list with every ~div element marked as value
+	;	starting at index start (0 indexed)
+	(define mark-multiples-false (lambda (l div start)
+		(cond
+			((null? l) '())
+			((= start 0) (cons (cons (car l) #f) (mark-multiples-false (cdr l) div (- div 1))))
+			(else (cons (car l) (mark-multiples-false (cdr l) div (- start 1)))))))
+
+	; returns a list containing the values in the truth-pair list
+	;	l for which the truth-value was #value
+	(define pick-values (lambda (l value)
+		(cond
+			((null? l) '())
+			((and (cdar l) value) (cons (caar l) (pick-values (cdr l) value)))
+			(else (pick-values (cdr l) value)))))
+
+	(define remove-multiples (lambda (l iter bound)
+
+		(define multiple (find-true l iter))
+		; (display "iterating")(newline)
+		(cond
+			((> multiple bound) l)
+			(else (let (
+				(refined (mark-multiples-false l multiple (- (* 2 multiple) 2))))
+				(remove-multiples refined (add1 iter) bound))))))
+	(let* (
+		(multiples (map (lambda (k) (cons k #t)) (range 2 n 1)))
+		(pairs (remove-multiples multiples 0 (ceiling (sqrt n)))))
+		(pick-values pairs #t))))
 
 ; finds the lowest divisor, by first finding the lowest even divisor
 ;	of the number n, and then forming a list of that number, and the
