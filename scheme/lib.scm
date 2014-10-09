@@ -31,6 +31,17 @@
 			(else (try n (+ 1 div))))))
 	(try n 2)))
 
+; uses the sieve of eratosthnes to find primes up to n ()
+(define sieve-of-eratosthenes (lambda (n)
+		(define bounds (sqrt n))
+		(define narrow (lambda (rem pass)
+			(let (
+				(p (list-ref rem pass)))
+				(cond
+					((> p bounds) rem)
+					(else (narrow (subtraction rem (range (* 2 p) n p)) (+ 1 pass)))))))
+		(narrow (range 2 n 1) 0)))
+
 ; finds the lowest divisor, by first finding the lowest even divisor
 ;	of the number n, and then forming a list of that number, and the
 ;	factorization of the quotient (n / divisor), if n happens to be
@@ -50,6 +61,13 @@
 ; ---------------------------------------------------------------------------------------
 ; List Comprehension / Operations
 ; ---------------------------------------------------------------------------------------
+
+; returns true if heap contains item
+(define contains? (lambda (heap item) 
+	(cond 
+		((null? heap) #f)
+		((eq? (car heap) item) #t)
+		(else (contains? (cdr heap) item)))))
 
 ; returns a list containing all items in source that are not contained in sink
 (define subtraction (lambda (source sink)
