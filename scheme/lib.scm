@@ -24,6 +24,8 @@
 (define prime? (lambda (n)
 	(define try (lambda (n div)
 		(cond 
+			((= 1 n) #f)
+			((= 2 n) #t)
 			((= (remainder n div) 0) #f)
 			((> div (sqrt n)) #t)
 			(else (try n (+ 1 div))))))
@@ -89,13 +91,6 @@
 		((null? l) '())
 		((not (pair? l)) (list l))
 		(else (append (flatten (car l)) (flatten (cdr l)))))))
-
-; returns true if heap contains item
-(define contains? (lambda (heap item) 
-	(cond 
-		((null? heap) #f)
-		((eq? (car heap) item) #t)
-		(else (contains (cdr heap) item)))))
 
 ; ---------------------------------------------------------------------------------------
 ; Searching / Reducing Lists
