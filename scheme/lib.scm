@@ -74,8 +74,8 @@
 				(refined (mark-multiples-false l multiple (- (* 2 multiple) 2))))
 				(remove-multiples refined (add1 iter) bound))))))
 	(let* (
-		(multiples (map (lambda (k) (cons k #t)) (range 2 n 1)))
-		(pairs (remove-multiples multiples 0 (ceiling (sqrt n)))))
+		(multiples (map (lambda (k) (cons k #t)) (cons 2 (range 3 n 2))))
+		(pairs (remove-multiples multiples 1 (ceiling (sqrt n)))))
 		(pick-values pairs #t))))
 
 ; finds the lowest divisor, by first finding the lowest even divisor
@@ -139,6 +139,10 @@
 		((pass? (car n)) (cons (car n) (filter pass? (cdr n))))
 		(else (filter pass? (cdr n))))))
 
+(define reduce (lambda (sieve l)
+	(cond
+		((null? (cdr l)) (car l))
+		(else (sieve (car l) (reduce sieve (cdr l)))))))
 ; returns a list without nested items
 (define flatten (lambda (l)
 	(cond
