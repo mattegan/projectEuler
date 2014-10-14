@@ -35,48 +35,52 @@
 	(try n 2)))
 
 ; generates primes up to n
-(define sieve-of-eratosthenes (lambda (n)
-	; in a list of dotted pairs, finds the n-th true pair 
-	;	if the pair is defined as (n . #t), 0 indexed
-	; returns false if there are not at least n true values
-	;	contained in l
-	(define find-true (lambda (l n)
-		(cond
-			((null? l) #f)
-			((and (= n 0) (cdar l)) (caar l))
-			((= n 0) (find-true (cdr l) n))
-			((cdar l) (find-true (cdr l) (sub1 n)))
-			(else (find-true (cdr l) n)))))
+(define sieve-of-eratosthenes (lambda (b)
+	(define vector-range (lambda (n)
+		(let* (
+			(source (make-vector n)))
+			(define fill (lambda (i)
+				(cond
+					((< i n) (vector-set! source i i) (fill (add1 i))))))
+			(fill 0)
+			source)))
 
-	; returns a list with every ~div element marked as value
-	;	starting at index start (0 indexed)
-	(define mark-multiples-false (lambda (l div start)
-		(cond
-			((null? l) '())
-			((= start 0) (cons (cons (car l) #f) (mark-multiples-false (cdr l) div (- div 1))))
-			(else (cons (car l) (mark-multiples-false (cdr l) div (- start 1)))))))
+	(define vector-sieve-remove (lambda (vector num add value)
+		(define count (vector-length vector))
+		(define fill (lambda (i) 
+			(let (
+				(index (+ add (* i num))))
+				(cond 
+				((< index count) 
+					(vector-set! vector index value) 
+					(fill (+ i 1)))))))
+		(fill 1)))
 
-	; returns a list containing the values in the truth-pair list
-	;	l for which the truth-value was #value
-	(define pick-values (lambda (l value)
+	(define vector-find-nth-value (lambda (vector n value)
+		(define found 0)
+		(define pass (lambda (i) 
+			(cond
+				((= found n) (sub1 i))
+				((>= i (vector-length vector)) #f)
+				((eq? (vector-ref vector i) value) (set! found (add1 found)) (pass (add1 i)))
+				(else (pass (add1 i))))))
+		(pass 0)))
+	(define marks (make-vector (- (floor (/ b 2)) 1) #t))
+	(define iteration (lambda (n)
+		(let* (
+			(prime-index (vector-find-nth-value marks (add1 n) #t))
+			(current-prime (+ 1 (* 2 (+ 1 prime-index)))))
+			(cond
+				((< current-prime (ceiling (sqrt b)))
+					(vector-sieve-remove marks current-prime prime-index #f)
+					(iteration (add1 n)))))))
+	(define find-result (lambda (i)
 		(cond
-			((null? l) '())
-			((and (cdar l) value) (cons (caar l) (pick-values (cdr l) value)))
-			(else (pick-values (cdr l) value)))))
-
-	(define remove-multiples (lambda (l iter bound)
-
-		(define multiple (find-true l iter))
-		; (display "iterating")(newline)
-		(cond
-			((> multiple bound) l)
-			(else (let (
-				(refined (mark-multiples-false l multiple (- (* 2 multiple) 2))))
-				(remove-multiples refined (add1 iter) bound))))))
-	(let* (
-		(multiples (map (lambda (k) (cons k #t)) (cons 2 (range 3 n 2))))
-		(pairs (remove-multiples multiples 1 (ceiling (sqrt n)))))
-		(pick-values pairs #t))))
+			((>= i (vector-length marks)) '())
+			((vector-ref marks i) (cons (add1 (* 2 (add1 i))) (find-result (add1 i))))
+			(else (find-result (add1 i))))))
+	(iteration 0)
+	(append (list 2) (find-result 0))))
 
 ; finds the lowest divisor, by first finding the lowest even divisor
 ;	of the number n, and then forming a list of that number, and the
