@@ -98,6 +98,14 @@
 			(quotient (quotient n lowestDivisor)))
 			(cons lowestDivisor (factorize quotient)))))))
 
+; returns the greatest common divisor of a set of numbers passed as arguments
+(define (gcd . args)
+	(define gcd-pair (lambda (a b)
+		(cond 
+			((= 0 b) a)
+			(else (gcd b (remainder a b))))))
+	(reduce gcd-pair args))
+
 ; ---------------------------------------------------------------------------------------
 ; List Comprehension / Operations
 ; ---------------------------------------------------------------------------------------
