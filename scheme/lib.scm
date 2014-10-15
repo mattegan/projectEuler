@@ -220,3 +220,13 @@
 		((null? hist) 0)
 		((= (cdr (car hist)) n) (car (car hist)))
 		(else (hist-get-value (cdr hist) n)))))
+
+; ---------------------------------------------------------------------------------------
+; Other
+; ---------------------------------------------------------------------------------------
+
+(define (output . args)
+	(cond ((not (null? args))
+			(display (car args))
+			(apply output (cdr args)))))
+	
