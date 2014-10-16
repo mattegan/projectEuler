@@ -194,10 +194,23 @@
 			(substring n 0 (/ (- (string-length n) 1) 2))
 			(substring n (/ (+ (string-length n) 1) 2) (string-length n))))))))
 
+; conversts a character to a digit, errors if character is not numeric
 (define char->digit (lambda (c)
 	(cond
 		((not (char-numeric? c)) (error "expected numeric character"))
 		(else (- (char->integer c) 48)))))
+
+; converts a string to a integer (doesn't take into account decimals)
+; -- removes characters before conversion, thus
+; 	(= (string->integer "123") (sting->integer "1 2 3") (string->integer "1w2w3")) = #t
+(define string->integer (lambda (s)
+	(let* (
+		(character-list (filter char-numeric? (string->list s)))
+		(number-length (length character-list))
+		(current-digit (if (not (null? character-list)) (car character-list) '())))
+		(cond
+			((null? character-list) 0)
+			(else (+ (* (char->digit current-digit) (expt 10 (sub1 number-length))) (string->number (list->string (cdr character-list)))))))))
 
 ; ---------------------------------------------------------------------------------------
 ; Histograms
