@@ -98,6 +98,27 @@
 			(quotient (quotient n lowestDivisor)))
 			(cons lowestDivisor (factorize quotient)))))))
 
+; determines the number of divisors (prime or not prime)
+; that a given number has 
+;		(num-divisors 20) = 5
+; this works by finding the prime factorization of the number
+;	then multiplying the powers of each prime, each supplemented
+; 	by 1, and then subtracting 1 from the result
+;	eg: 20 -> (2 2 5) -> (2^2 5^1) -> (2 + 1) * (1 + 1) = 3 * 2 = 6
+;		6 - 1 = 5
+(define num-divisors (lambda (n)
+	(cond 
+		((= n 0) 0)
+		((= n 1) 1)
+		(else (let* (
+			(prime-factors (factorize n)))
+			(cond
+				((= 1 (length prime-factors)) 2)
+				(else (let* (
+					(exponents (map (lambda (h) (add1 (car h))) (hist-supplement '() prime-factors)))
+					(factor-mult (reduce * exponents)))
+					(- factor-mult 1)))))))))
+
 ; returns the greatest common divisor of a set of numbers passed as arguments
 (define (gcd . args)
 	(define gcd-pair (lambda (a b)
@@ -155,12 +176,22 @@
 	(cond
 		((null? (cdr l)) (car l))
 		(else (sieve (car l) (reduce sieve (cdr l)))))))
+
 ; returns a list without nested items
 (define flatten (lambda (l)
 	(cond
 		((null? l) '())
 		((not (pair? l)) (list l))
 		(else (append (flatten (car l)) (flatten (cdr l)))))))
+
+; finds the first value of n (iteration of generator) such that
+;	(comparator (test (generator n)) comp) returns true
+(define find-iter (lambda (comparator generator test comp)
+		(define iter (lambda (n)
+			(cond
+				((comparator (test (generator n)) comp) n)
+				(else (iter (add1 n))))))
+		(iter 0)))
 
 ; ---------------------------------------------------------------------------------------
 ; Searching / Reducing Lists
@@ -250,4 +281,3 @@
 	(cond ((not (null? args))
 			(display (car args))
 			(apply output (cdr args)))))
-	
